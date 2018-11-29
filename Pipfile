@@ -1,0 +1,29 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+autopep8 = "*"
+
+[packages]
+flask = "*"
+requests = "*"
+flask-cors = "*"
+flask-restplus = "*"
+pytest = "*"
+pylint = "*"
+marshmallow = "*"
+psycopg2 = "*"
+urllib = "*"
+flask-json = "*"
+passlib = "*"
+flask-jwt-extended = "*"
+psycopg2-binary = "*"
+python-dotenv = "*"
+
+[requires]
+python_version = "3.6"
+
+[pipenv]
+allow_prereleases = true
