@@ -11,10 +11,10 @@ role = Role()
 
 
 @click.command()
-@click.option('--name', prompt='Enter Admin full name', help='Admin Full names.')
-@click.option('--username', prompt='Enter Admin username', help='Admin username.')
-@click.option('--email', prompt='Enter Admin email', help='Admin email.')
-@click.password_option('--password', prompt='Enter Admin password', help='Admin password more than 6 characters.')
+@click.option('--name', prompt='Enter Admin full name', help='Admin Full names.')  # noqa E501
+@click.option('--username', prompt='Enter Admin username', help='Admin username.')  # noqa E501
+@click.option('--email', prompt='Enter Admin email', help='Admin email.')  # noqa E501
+@click.password_option('--password', prompt='Enter Admin password', help='Admin password more than 6 characters.')  # noqa E501
 @with_appcontext
 def create_admin(name, username, email, password):
     filter_role = {'role': 'admin'}

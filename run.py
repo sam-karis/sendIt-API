@@ -12,3 +12,7 @@ app = create_app(config[config_name])
 @app.route('/')
 def index():
     return jsonify({'message': 'Welcome to SendIT API'})
+
+
+if __name__ == '__main__':
+    app.run(debug=True)

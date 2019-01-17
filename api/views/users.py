@@ -30,12 +30,12 @@ class LoginUserResource(Resource):
     def post(self):
         user_credentials = request.get_json()
         logged_user = UserLoginSchema().load_json_data(user_credentials)
-        logged_user_data = {'username': logged_user['username']} if 'username' in user_credentials else {
+        logged_user_data = {'username': logged_user['username']} if 'username' in user_credentials else {  # noqa E501
             'email': logged_user['email']}
         user_from_db = user.query_user(**logged_user_data)
 
         if user_from_db:
-            if user.verify_password(user_from_db['password'], logged_user['password']):
+            if user.verify_password(user_from_db['password'], logged_user['password']):  # noqa E501
                 user_from_db.pop('password')
                 access_token = create_access_token(identity=user_from_db)
                 return jsonify({

@@ -29,7 +29,7 @@ class UserLoginSchema(BaseSchema):
 
     @validates_schema
     def validate_email_username(self, data):
-        if not 'email' in data and 'username' not in data:
+        if 'email' not in data and 'username' not in data:
             raise ValidationError(
                 'must provide either username or email', 'user')
         return True

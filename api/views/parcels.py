@@ -1,6 +1,6 @@
 
 from flask_restplus import Resource
-from flask import jsonify, request, Response
+from flask import jsonify, request
 from flask_jwt_extended import (jwt_required)
 
 from app import api
@@ -77,7 +77,7 @@ class GetUserParcelsResource(Resource):
         parcels = parcel.query_parcel(**filter_data)
         if not parcels:
             response = jsonify(
-                {"message": f"{current_user['username']} has no {res} ordered."})
+                {"message": f"{current_user['username']} has no {res} ordered."}) # noqa E501
             response.status_code = 404
             return response
         return jsonify(parcels)
@@ -95,7 +95,7 @@ class CancelParcelResource(Resource):
             new_parcel_data = {'status': 'cancel'}
             editted_parcel = parcel.update_parcel(parcelId, **new_parcel_data)
             return jsonify(editted_parcel)
-        return jsonify({"message": f"{current_user['username']} has no parcel of id {parcelId}."})
+        return jsonify({"message": f"{current_user['username']} has no parcel of id {parcelId}."})  # noqa E501
 
 
 @api.route('/parcels/<parcelId>/destination')
@@ -111,7 +111,7 @@ class EditParcelDestinationResource(Resource):
             new_parcel_data = DestinationSchema().load_json_data(request_data)
             editted_parcel = parcel.update_parcel(parcelId, **new_parcel_data)
             return jsonify(editted_parcel)
-        return jsonify({"message": f"{current_user['username']} has no parcel of id {parcelId}."})
+        return jsonify({"message": f"{current_user['username']} has no parcel of id {parcelId}."})  # noqa E501
 
 
 @api.route('/parcels/<parcelId>/status')
@@ -140,7 +140,7 @@ class EditParcelPresentLocationResource(Resource):
         parcel_to_edit = get_parcel_to_edit(parcelId, filter_data)
         if parcel_to_edit:
             request_data = request.get_json()
-            new_parcel_data = PresentLocationSchema().load_json_data(request_data)
+            new_parcel_data = PresentLocationSchema().load_json_data(request_data)  # noqa E501
             editted_parcel = parcel.update_parcel(parcelId, **new_parcel_data)
             return jsonify(editted_parcel)
         return jsonify({"message": f"No parcel id {parcelId}."})

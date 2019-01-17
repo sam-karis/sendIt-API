@@ -1,4 +1,4 @@
-from flask_jwt_extended import (create_access_token, get_jwt_identity)
+from flask_jwt_extended import (get_jwt_identity)
 from flask_json import JsonError
 
 
@@ -6,6 +6,7 @@ from flask_json import JsonError
 from api.models.roles import Role
 
 role = Role()
+
 
 def get_user_identity():
     current_user = get_jwt_identity()
@@ -17,7 +18,10 @@ def admin_required(func):
         user = get_user_identity()
         role_id = {'id': str(user['role_id'])}
         user_role = role.query_role(**role_id)
-        if user_role['role'] !=  'admin':
-            raise JsonError(error="You don't have access to this functionality.", status_=401)
+        if user_role['role'] != 'admin':
+            raise JsonError(
+                error="You don't have access to this functionality.",
+                status_=401
+                )
         return func(*args, **kwargs)
     return wrapper

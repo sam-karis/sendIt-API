@@ -1,5 +1,5 @@
 
-from marshmallow import Schema, fields, ValidationError
+from marshmallow import Schema, ValidationError
 
 
 class BaseSchema(Schema):

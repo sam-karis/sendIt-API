@@ -49,8 +49,10 @@ class Database():
                 role VARCHAR(60) NOT NULL UNIQUE DEFAULT 'default_user'
                 );
 
-            INSERT INTO roles (role) SELECT 'default_user' WHERE NOT EXISTS (SELECT * FROM roles where role='default_user');
-            INSERT INTO roles (role) SELECT 'admin' WHERE NOT EXISTS (SELECT * FROM roles where role='admin');
+            INSERT INTO roles (role) SELECT 'default_user' WHERE NOT EXISTS (
+                SELECT * FROM roles where role='default_user');
+            INSERT INTO roles (role) SELECT 'admin' WHERE NOT EXISTS (
+                SELECT * FROM roles where role='admin');
 
             CREATE TABLE IF NOT EXISTS users (
                 id serial PRIMARY KEY NOT NULL,

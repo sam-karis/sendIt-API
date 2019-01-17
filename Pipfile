@@ -15,15 +15,16 @@ pytest = "*"
 pylint = "*"
 marshmallow = "*"
 psycopg2 = "*"
-urllib = "*"
 flask-json = "*"
 passlib = "*"
 flask-jwt-extended = "*"
 psycopg2-binary = "*"
 python-dotenv = "*"
+tox = "*"
+flake8 = "*"
 
 [requires]
-python_version = "3.6"
+python_version = "3.7"
 
 [pipenv]
 allow_prereleases = true
