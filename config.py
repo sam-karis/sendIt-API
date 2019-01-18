@@ -5,7 +5,6 @@ import datetime
 class Config(object):
     """Common configuration."""
 
-    DATABASE_URI = os.getenv('DATABASE_URI')
     JWT_ACCESS_TOKEN_EXPIRES = datetime.timedelta(minutes=60)
     JWT_SECRET_KEY = os.getenv('SECRET_KEY')
     DEBUG = False
@@ -14,7 +13,7 @@ class Config(object):
 
 class DevelopmentConfig(Config):
     """Development config"""
-
+    DATABASE_URI = os.getenv('DATABASE_URI')
     DEBUG = True
 
 

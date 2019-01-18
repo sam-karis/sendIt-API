@@ -8,15 +8,14 @@ from urllib.parse import urlparse
 
 from config import config
 
-# Get database uri from config
-config_env = os.getenv('FLASK_CONFIG_ENV')
-DATABASE_URI = config[config_env].DATABASE_URI
-db_uri = urlparse(DATABASE_URI)
-
 
 class Database():
 
     def __init__(self):
+        # Get database uri from config
+        config_env = os.getenv('FLASK_ENV', default='development')
+        DATABASE_URI = config[config_env].DATABASE_URI
+        db_uri = urlparse(DATABASE_URI)
         # Create a db connection
         self.connection = psycopg2.connect(
             database=db_uri.path[1:],
@@ -26,8 +25,6 @@ class Database():
         )
         # create a cursor
         self.cursor = self.connection.cursor(cursor_factory=RealDictCursor)
-
-        self.create_tables()
 
     def excute_query(self, table_query):
         try:
@@ -40,45 +37,6 @@ class Database():
                 raise JsonError(
                     error='User with that username or email already exists.')
             raise JsonError(error=str(error))
-
-    def create_tables(self):
-        CREATE_TABLES_QUERY = (
-            """
-            CREATE TABLE IF NOT EXISTS roles (
-                id serial PRIMARY KEY NOT NULL,
-                role VARCHAR(60) NOT NULL UNIQUE DEFAULT 'default_user'
-                );
-
-            INSERT INTO roles (role) SELECT 'default_user' WHERE NOT EXISTS (
-                SELECT * FROM roles where role='default_user');
-            INSERT INTO roles (role) SELECT 'admin' WHERE NOT EXISTS (
-                SELECT * FROM roles where role='admin');
-
-            CREATE TABLE IF NOT EXISTS users (
-                id serial PRIMARY KEY NOT NULL,
-                role_id integer NOT NULL,
-                name VARCHAR(60) NOT NULL,
-                username VARCHAR(60) UNIQUE NOT NULL,
-                email VARCHAR(60) UNIQUE NOT NULL,
-                password VARCHAR(250) NOT NULL,
-                FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
-                );
-
-            CREATE TABLE IF NOT EXISTS parcels (
-                id serial PRIMARY KEY NOT NULL,
-                user_id integer NOT NULL,
-                title VARCHAR(60) NOT NULL,
-                destination VARCHAR(60) NOT NULL,
-                current_location VARCHAR(60) NOT NULL DEFAULT '',
-                quantity VARCHAR(60) NOT NULL,
-                status VARCHAR(60) NOT NULL DEFAULT 'pending',
-                date_ordered timestamp DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-                );
-            """
-        )
-
-        self.excute_query(CREATE_TABLES_QUERY)
 
     def insert(self, target_table, data):
         table_columns = ", ".join(data.keys())
@@ -121,3 +79,55 @@ class Database():
         )
         cursor = self.excute_query(UPDATE_QUERY)
         return cursor.fetchone()
+
+
+class Migrate(Database):
+
+    def create_tables(self):
+        CREATE_TABLES_QUERY = (
+            """
+            CREATE TABLE IF NOT EXISTS roles (
+                id serial PRIMARY KEY NOT NULL,
+                role VARCHAR(60) NOT NULL UNIQUE DEFAULT 'default_user'
+                );
+
+            INSERT INTO roles (role) SELECT 'default_user' WHERE NOT EXISTS (
+                SELECT * FROM roles where role='default_user');
+            INSERT INTO roles (role) SELECT 'admin' WHERE NOT EXISTS (
+                SELECT * FROM roles where role='admin');
+
+            CREATE TABLE IF NOT EXISTS users (
+                id serial PRIMARY KEY NOT NULL,
+                role_id integer NOT NULL,
+                name VARCHAR(60) NOT NULL,
+                username VARCHAR(60) UNIQUE NOT NULL,
+                email VARCHAR(60) UNIQUE NOT NULL,
+                password VARCHAR(250) NOT NULL,
+                FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
+                );
+
+            CREATE TABLE IF NOT EXISTS parcels (
+                id serial PRIMARY KEY NOT NULL,
+                user_id integer NOT NULL,
+                title VARCHAR(60) NOT NULL,
+                destination VARCHAR(60) NOT NULL,
+                current_location VARCHAR(60) NOT NULL DEFAULT '',
+                quantity VARCHAR(60) NOT NULL,
+                status VARCHAR(60) NOT NULL DEFAULT 'pending',
+                date_ordered timestamp DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+                );
+            """
+        )
+
+        self.excute_query(CREATE_TABLES_QUERY)
+
+    def drop_tables(self):
+        DROP_TABLES_QUERY = (
+            """
+            DROP TABLE IF EXISTS roles CASCADE;
+            DROP TABLE IF EXISTS users CASCADE;
+            DROP TABLE IF EXISTS parcels CASCADE;
+            """
+        )
+        self.excute_query(DROP_TABLES_QUERY)

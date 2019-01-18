@@ -3,14 +3,13 @@ from flask_restplus import Resource
 from flask import jsonify, request
 from flask_jwt_extended import (create_access_token)
 
-from app import api
+# Local Imports
 from api.helpers.schema.user import (UserSignUpSchema, UserLoginSchema)
 from api.models.users import User
 
 user = User()
 
 
-@api.route('/auth/signup')
 class RegisterUserResource(Resource):
 
     def post(self):
@@ -24,7 +23,6 @@ class RegisterUserResource(Resource):
         return response
 
 
-@api.route('/auth/login')
 class LoginUserResource(Resource):
 
     def post(self):
