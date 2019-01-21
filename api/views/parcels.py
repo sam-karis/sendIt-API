@@ -3,7 +3,7 @@ from flask_restplus import Resource
 from flask import jsonify, request
 from flask_jwt_extended import (jwt_required)
 
-from app import api
+# local imports
 from api.helpers.schema.parcel import (
     CreateSchema, DestinationSchema, StatusSchema, PresentLocationSchema)
 from api.models.parcels import Parcel
@@ -15,14 +15,12 @@ from api.helpers.parcel_filters import get_parcel_to_edit
 parcel = Parcel()
 
 
-@api.route('/parcels')
 class CreateGetParcelsResource(Resource):
 
     @jwt_required
     def post(self):
         '''Create parcel'''
         current_user = get_user_identity()
-        print(current_user)
         request_data = request.get_json()
         new_parcel_data = CreateSchema().load_json_data(request_data)
         new_parcel_data['user_id'] = str(current_user['id'])
@@ -44,7 +42,6 @@ class CreateGetParcelsResource(Resource):
         return response
 
 
-@api.route('/parcels/<parcelId>')
 class GetParcelByIdResource(Resource):
 
     @jwt_required
@@ -59,8 +56,6 @@ class GetParcelByIdResource(Resource):
         return jsonify(parcel_from_db)
 
 
-@api.route('/users/<userId>/parcels/')
-@api.route('/users/<userId>/parcels/<parcelId>')
 class GetUserParcelsResource(Resource):
 
     @jwt_required
@@ -83,7 +78,6 @@ class GetUserParcelsResource(Resource):
         return jsonify(parcels)
 
 
-@api.route('/parcels/<parcelId>/cancel')
 class CancelParcelResource(Resource):
 
     @jwt_required
@@ -98,7 +92,6 @@ class CancelParcelResource(Resource):
         return jsonify({"message": f"{current_user['username']} has no parcel of id {parcelId}."})  # noqa E501
 
 
-@api.route('/parcels/<parcelId>/destination')
 class EditParcelDestinationResource(Resource):
 
     @jwt_required
@@ -114,7 +107,6 @@ class EditParcelDestinationResource(Resource):
         return jsonify({"message": f"{current_user['username']} has no parcel of id {parcelId}."})  # noqa E501
 
 
-@api.route('/parcels/<parcelId>/status')
 class EditParcelStatusResource(Resource):
 
     @jwt_required
@@ -130,7 +122,6 @@ class EditParcelStatusResource(Resource):
         return jsonify({"message": f"No parcel id {parcelId}."})
 
 
-@api.route('/parcels/<parcelId>/presentLocation')
 class EditParcelPresentLocationResource(Resource):
 
     @jwt_required
