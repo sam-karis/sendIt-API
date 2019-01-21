@@ -38,7 +38,9 @@ class CreateGetParcelsResource(Resource):
     def get(self):
         '''Get all parcels by admin'''
         parcels = parcel.query_all_parcel()
-        response = jsonify(parcels)
+        response = jsonify({
+             'message': f"A total of {len(parcels)} parcels ordered.",
+             'parcels': parcels})
         return response
 
 
@@ -72,10 +74,13 @@ class GetUserParcelsResource(Resource):
         parcels = parcel.query_parcel(**filter_data)
         if not parcels:
             response = jsonify(
-                {"message": f"{current_user['username']} has no {res} ordered."}) # noqa E501
+                {"message": f"{current_user['username']} has no {res} ordered."})  # noqa E501
             response.status_code = 404
             return response
-        return jsonify(parcels)
+        return jsonify({
+            'message': f"{current_user['username']} has ordered {len(parcels)} parcels",  # noqa E501
+            'parcels': parcels
+        })
 
 
 class CancelParcelResource(Resource):
@@ -103,7 +108,9 @@ class EditParcelDestinationResource(Resource):
             request_data = request.get_json()
             new_parcel_data = DestinationSchema().load_json_data(request_data)
             editted_parcel = parcel.update_parcel(parcelId, **new_parcel_data)
-            return jsonify(editted_parcel)
+            return jsonify({
+                'message': 'Destination changed successfully',
+                'parcel': editted_parcel})
         return jsonify({"message": f"{current_user['username']} has no parcel of id {parcelId}."})  # noqa E501
 
 
