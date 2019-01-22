@@ -96,6 +96,22 @@ def new_destination():
 
 
 @pytest.fixture(scope='module')
+def new_status():
+    details = {
+        "status": "In-transit"
+    }
+    return json.dumps(details)
+
+
+@pytest.fixture(scope='module')
+def new_location():
+    details = {
+        "current_location": "Cairo"
+    }
+    return json.dumps(details)
+
+
+@pytest.fixture(scope='module')
 def access_token(client, test_user, test_user_login):
     client.post(
         '/api/v1/auth/signup',

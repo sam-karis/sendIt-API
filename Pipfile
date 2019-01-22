@@ -22,6 +22,7 @@ psycopg2-binary = "*"
 python-dotenv = "*"
 tox = "*"
 flake8 = "*"
+tox-pipenv = "*"
 
 [requires]
 python_version = "3.7"

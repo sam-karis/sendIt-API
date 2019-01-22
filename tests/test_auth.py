@@ -1,5 +1,5 @@
 
-def test_user_signup(client, test_user):  # noqa F811
+def test_user_signup(client, test_user):
     response = client.post(
         '/api/v1/auth/signup',
         data=test_user, headers={'content-type': 'application/json'})
