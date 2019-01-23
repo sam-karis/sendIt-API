@@ -14,6 +14,7 @@ def create_app(config_name):
     app.config.from_pyfile('config.py')
     app.secret_key = os.getenv('SECRET_KEY')
     app.url_map.strict_slashes = False
+    app.config['JWT_SECRET_KEY'] = 'jwt-token-secret-key'
     JWTManager(app)
 
     # register blueprint

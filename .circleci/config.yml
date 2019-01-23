@@ -9,20 +9,22 @@ jobs:
       # specify the version you desire here
       # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
       - image: circleci/python:3.7.2
-        environment: # environment variables for primary container
-          PIPENV_VENV_IN_PROJECT: true
-          DATABASE_URL: postgresql://root@localhost/circle_test?sslmode=disable
+        environment:
+          FLASK_ENV: testing
+          FLASK_APP: run.py
+          TEST_DATABASE_URI: postgresql://root@localhost/circle_test
       
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
       # documented at https://circleci.com/docs/2.0/circleci-images/
       # - image: circleci/postgres:9.4
-      - image: circleci/postgres:11.0
+      - image: circleci/postgres:9.6.5-alpine-ram
         environment: # environment variables for the Postgres container.
+          SECRET_KEY: "!!secret234567890"
           POSTGRES_USER: root
           POSTGRES_DB: circle_test
 
-    working_directory: ~/repo
+    working_directory: ~/SENDIT-API
 
     steps:
       - checkout
@@ -49,8 +51,7 @@ jobs:
       - run:
           name: run tests
           command: |
-            pipenv shell
-            pytest
+            pipenv run tox
 
       - store_artifacts:
           path: test-reports
