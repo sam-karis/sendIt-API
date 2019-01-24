@@ -1,4 +1,5 @@
 [![CircleCI](https://circleci.com/gh/sam-karis/sendIt-API.svg?style=svg)](https://circleci.com/gh/sam-karis/sendIt-API)
+[![Maintainability](https://api.codeclimate.com/v1/badges/5c1b42c516d90ce609df/maintainability)](https://codeclimate.com/github/sam-karis/sendIt-API/maintainability)
 [![Coverage Status](https://coveralls.io/repos/github/sam-karis/sendIt-API/badge.svg?branch=master)](https://coveralls.io/github/sam-karis/sendIt-API?branch=master)
 
 # SendiT-API
