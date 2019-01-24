@@ -25,7 +25,6 @@ class CreateGetParcelsResource(Resource):
         new_parcel_data = CreateSchema().load_json_data(request_data)
         new_parcel_data['user_id'] = str(current_user['id'])
         parcel_created = parcel.save(**new_parcel_data)
-
         response = jsonify({
             'message': 'parcel created successfully',
             'parcel': parcel_created
@@ -38,7 +37,9 @@ class CreateGetParcelsResource(Resource):
     def get(self):
         '''Get all parcels by admin'''
         parcels = parcel.query_all_parcel()
-        response = jsonify(parcels)
+        response = jsonify({
+             'message': f"A total of {len(parcels)} parcels ordered.",
+             'parcels': parcels})
         return response
 
 
@@ -52,7 +53,9 @@ class GetParcelByIdResource(Resource):
         parcel_id = {'id': str(parcelId)}
         parcel_from_db = parcel.query_parcel(**parcel_id)
         if not parcel_from_db:
-            return jsonify({"message": f"No parcel with id {parcelId}"})
+            response = jsonify({"message": f"No parcel with id {parcelId}"})
+            response.status_code = 404
+            return response
         return jsonify(parcel_from_db)
 
 
@@ -72,10 +75,13 @@ class GetUserParcelsResource(Resource):
         parcels = parcel.query_parcel(**filter_data)
         if not parcels:
             response = jsonify(
-                {"message": f"{current_user['username']} has no {res} ordered."}) # noqa E501
+                {"message": f"{current_user['username']} has no {res} ordered."})  # noqa E501
             response.status_code = 404
             return response
-        return jsonify(parcels)
+        return jsonify({
+            'message': f"{current_user['username']} has ordered {len(parcels)} parcels",  # noqa E501
+            'parcels': parcels
+        })
 
 
 class CancelParcelResource(Resource):
@@ -87,9 +93,19 @@ class CancelParcelResource(Resource):
         parcel_to_cancel = get_parcel_to_edit(parcelId, filter_data)
         if parcel_to_cancel:
             new_parcel_data = {'status': 'cancel'}
-            editted_parcel = parcel.update_parcel(parcelId, **new_parcel_data)
-            return jsonify(editted_parcel)
-        return jsonify({"message": f"{current_user['username']} has no parcel of id {parcelId}."})  # noqa E501
+            if parcel_to_cancel[0]['status'] == 'cancel':
+                response = {
+                    'message': 'Parcel already cancelled.',
+                    'parcel': parcel_to_cancel[0]}
+            else:
+                editted_parcel = parcel.update_parcel(parcelId, **new_parcel_data)  # noqa E501
+                response = {
+                    'message': 'Parcel cancelled successfully.',
+                    'parcel': editted_parcel}
+            return jsonify(response)
+        response = jsonify({"message": f"{current_user['username']} has no parcel of id {parcelId}."})  # noqa E501
+        response.status_code = 404
+        return response
 
 
 class EditParcelDestinationResource(Resource):
@@ -103,8 +119,12 @@ class EditParcelDestinationResource(Resource):
             request_data = request.get_json()
             new_parcel_data = DestinationSchema().load_json_data(request_data)
             editted_parcel = parcel.update_parcel(parcelId, **new_parcel_data)
-            return jsonify(editted_parcel)
-        return jsonify({"message": f"{current_user['username']} has no parcel of id {parcelId}."})  # noqa E501
+            return jsonify({
+                'message': 'Destination changed successfully',
+                'parcel': editted_parcel})
+        response = jsonify({"message": f"{current_user['username']} has no parcel of id {parcelId}."})  # noqa E501
+        response.status_code = 404
+        return response
 
 
 class EditParcelStatusResource(Resource):
@@ -118,8 +138,12 @@ class EditParcelStatusResource(Resource):
             request_data = request.get_json()
             new_parcel_data = StatusSchema().load_json_data(request_data)
             editted_parcel = parcel.update_parcel(parcelId, **new_parcel_data)
-            return jsonify(editted_parcel)
-        return jsonify({"message": f"No parcel id {parcelId}."})
+            return jsonify({
+                'message': 'Parcel status editted successfully.',
+                'parcel': editted_parcel})
+        response = jsonify({"message": f"No parcel id {parcelId}."})
+        response.status_code = 404
+        return response
 
 
 class EditParcelPresentLocationResource(Resource):
@@ -133,5 +157,10 @@ class EditParcelPresentLocationResource(Resource):
             request_data = request.get_json()
             new_parcel_data = PresentLocationSchema().load_json_data(request_data)  # noqa E501
             editted_parcel = parcel.update_parcel(parcelId, **new_parcel_data)
-            return jsonify(editted_parcel)
-        return jsonify({"message": f"No parcel id {parcelId}."})
+            return jsonify({
+                'message': 'Parcel location editted successfully.',
+                'parcel': editted_parcel
+            })
+        response = jsonify({"message": f"No parcel id {parcelId}."})
+        response.status_code = 404
+        return response
